@@ -59,20 +59,10 @@ def simple_dst_fix(df: pd.DataFrame, start_at_midnight: bool = True) -> pd.DataF
 
 
 class RNN_attention(nn.Module):
-    """
-    RNN with feature attention (NO Fourier features).
-
-    Architecture:
-    1. RNN processes base dynamics (x0 only) in latent space
-    2. Feature attention refines the latent representation
-    3. Final linear projection to output (24 hours)
-
-    This is the baseline model without seasonal Fourier features.
-    """
 
     def __init__(
             self,
-            latent_dim=24,  # Dimension of RNN hidden state
+            latent_dim=24,
             d_model=128,
             nhead=4,
             activation="relu",
@@ -84,13 +74,12 @@ class RNN_attention(nn.Module):
     ):
         super().__init__()
 
-        self.H = H  # Output dimension (24 hours)
-        self.latent_dim = latent_dim  # RNN hidden state dimension
+        self.H = H
+        self.latent_dim = latent_dim
 
-        # RNN for base dynamics (only processes x0 = daily total)
         if rnn_type == "rnn":
             self.rnn = nn.RNN(
-                input_size=1,  # Only x0 (daily total)
+                input_size=1,
                 hidden_size=latent_dim,
                 num_layers=1,
                 batch_first=True,
@@ -104,12 +93,10 @@ class RNN_attention(nn.Module):
                 batch_first=True
             )
 
-        # Optional: learnable initial hidden state
         self.learn_z0 = learn_z0
         if learn_z0:
             self.z0 = nn.Parameter(torch.zeros(1, 1, latent_dim))
 
-        # Feature attention mechanism (operates on latent space)
         self.feat_embed = nn.Parameter(torch.randn(latent_dim, d_model) * 0.02)
         self.attn = nn.MultiheadAttention(d_model, nhead, batch_first=True, dropout=dropout)
         self.ln1 = nn.LayerNorm(d_model)
@@ -125,33 +112,22 @@ class RNN_attention(nn.Module):
         if use_gate:
             self.gate = nn.Sequential(nn.Linear(latent_dim, latent_dim), nn.Sigmoid())
 
-        # Final output projection from latent space to H hours
         self.A = nn.Parameter(torch.randn(self.H, latent_dim) * 0.01)
         self.c = nn.Parameter(torch.zeros(self.H))
 
     def _feature_attend(self, z):
-        """
-        Apply self-attention over the latent features.
-        z: (B, T, latent_dim)
 
-        We process each timestep independently, applying attention over the latent_dim features.
-        """
-        B, T, L = z.shape  # L = latent_dim
+        B, T, L = z.shape
 
-        # Reshape to (B*T, latent_dim) to process all timesteps together
         z_flat = z.reshape(B * T, L)
 
-        # Create feature embeddings: (B*T, latent_dim, d_model)
         tokens = z_flat.unsqueeze(-1) * self.feat_embed.unsqueeze(0)
 
-        # Apply attention over latent_dim dimension
-        # Input shape: (B*T, latent_dim, d_model)
         attn_out, _ = self.attn(tokens, tokens, tokens)
         tokens = self.ln1(tokens + attn_out)
         tokens = self.ln2(tokens + self.ffn(tokens))
-        delta = self.out_proj(tokens).squeeze(-1)  # (B*T, latent_dim)
+        delta = self.out_proj(tokens).squeeze(-1)
 
-        # Reshape back to (B, T, latent_dim)
         delta = delta.reshape(B, T, L)
 
         if self.use_gate:
@@ -160,33 +136,20 @@ class RNN_attention(nn.Module):
             return z + delta
 
     def forward(self, x_cont, z0=None):
-        """
-        Forward pass through RNN with attention (no Fourier features).
 
-        Args:
-            x_cont: (B, T, 1) - only daily totals (x0)
-            z0: Optional initial hidden state (num_layers, B, latent_dim)
-
-        Returns:
-            O: (B, T, H) - output predictions for H hours (typically 24)
-            Z: (B, T, latent_dim) - final hidden states in latent space
-        """
         B, T, C = x_cont.shape
         assert C == 1, f"expect input_dim=1 (only x0), got {C}"
 
-        # RNN processes only base dynamics in latent space
         if z0 is None and self.learn_z0:
-            h0 = self.z0.expand(-1, B, -1).contiguous()  # (1, B, latent_dim)
+            h0 = self.z0.expand(-1, B, -1).contiguous()
         else:
             h0 = z0
 
-        h, _ = self.rnn(x_cont, h0)  # h: (B, T, latent_dim)
+        h, _ = self.rnn(x_cont, h0)
 
-        # Apply feature attention in latent space (no Fourier addition)
-        z = self._feature_attend(h)  # (B, T, latent_dim)
+        z = self._feature_attend(h)
 
-        # Final output projection from latent space to H hours
-        o = z @ self.A.T + self.c  # (B, T, latent_dim) @ (latent_dim, H) -> (B, T, H)
+        o = z @ self.A.T + self.c
 
         return o, z
 
@@ -194,7 +157,6 @@ class RNN_attention(nn.Module):
     def extract_XY(df_wide):
         y_cols = sorted([c for c in df_wide.columns if c.startswith("y_")],
                         key=lambda s: int(s.split("_")[1]))
-        # Only x_0 (daily total), no Fourier features
         X = df_wide[["x_0"]]
         Y = df_wide[y_cols].to_numpy(dtype=np.float32)
 
@@ -221,19 +183,7 @@ class RNN_attention(nn.Module):
 
     @torch.no_grad()
     def forecast_knownX(self, X_hist, X_future, T, sx=None, sy=None):
-        """
-        Generate forecast given historical and future features.
 
-        Args:
-            X_hist: Historical features (N_hist, cont_dim)
-            X_future: Future features (N_future, cont_dim)
-            T: Context length
-            sx: StandardScaler for X
-            sy: StandardScaler for Y
-
-        Returns:
-            Forecasted values (N_future, 24)
-        """
         self.eval()
         dev = next(self.parameters()).device
 
@@ -244,27 +194,18 @@ class RNN_attention(nn.Module):
             hist = sx.transform(hist).astype(np.float32)
             fut = sx.transform(fut).astype(np.float32)
 
-        x_in = np.concatenate([hist, fut], axis=0)[None, ...]  # (1, T+N_future, cont_dim)
+        x_in = np.concatenate([hist, fut], axis=0)[None, ...]
         x_in = torch.from_numpy(x_in).to(dev)
 
         o_all, _ = self(x_in)
-        y_std = o_all[0, -len(X_future):, :].cpu().numpy()  # (N_future, 24)
+        y_std = o_all[0, -len(X_future):, :].cpu().numpy()
 
         return sy.inverse_transform(y_std) if sy is not None else y_std
 
     def get_dataloader(self, df):
-        """
-        Prepare data loader from raw dataframe (NO Fourier features).
 
-        Args:
-            df: DataFrame with columns ['ds', 'y']
-
-        Returns:
-            Tuple of (loader, sx, sy, X_train, Y_train, X_test, Y_test)
-        """
         df['ds'] = pd.to_datetime(df['ds'])
 
-        # Fix missing data and duplicate data and na
         df = simple_dst_fix(df)
 
         df['day'] = df['ds'].dt.date
@@ -277,8 +218,6 @@ class RNN_attention(nn.Module):
             .reset_index()
         )
         df_wide['x_0'] = df_wide.filter(like="y_").sum(axis=1)
-
-        # NO Fourier features added
 
         X, Y, _ = self.extract_XY(df_wide)
 

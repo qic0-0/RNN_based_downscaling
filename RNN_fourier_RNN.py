@@ -106,22 +106,13 @@ def append_fourier_features(df_wide, K, period_days,
 
 
 class RNN_fourier(nn.Module):
-    """
-    RNN with output-only Fourier features.
-
-    Architecture:
-    1. RNN processes base dynamics (x0 only) in latent space
-    2. Fourier features are added to latent representation
-    3. Feature attention refines the combined representation
-    4. Final linear projection to output (24 hours)
-    """
 
     def __init__(
             self,
             cont_dim=0,
             fourier_dim=0,
             xf_mode="vector",
-            latent_dim=24,  # New parameter: dimension of RNN hidden state
+            latent_dim=24,
             d_model=128,
             nhead=4,
             activation="relu",
@@ -139,18 +130,17 @@ class RNN_fourier(nn.Module):
         else:
             assert cont_dim == 1 + 24 * fourier_dim, "matrix mode cont_dim should be 1+24*F"
 
-        self.H = H  # Output dimension (24 hours)
-        self.latent_dim = latent_dim  # RNN hidden state dimension
+        self.H = H
+        self.latent_dim = latent_dim
         self.F = fourier_dim
         self.mode = xf_mode
         self.nonneg_U0 = nonneg_U0
         self.cont_dim = cont_dim
 
-        # RNN for base dynamics (only processes x0)
         if rnn_type == "rnn":
             self.rnn = nn.RNN(
-                input_size=1,  # Only x0 (daily total)
-                hidden_size=latent_dim,  # Can be different from H
+                input_size=1,
+                hidden_size=latent_dim,
                 num_layers=1,
                 batch_first=True,
                 nonlinearity='relu' if activation == 'relu' else 'tanh'
@@ -163,28 +153,22 @@ class RNN_fourier(nn.Module):
                 batch_first=True
             )
 
-        # Optional: learnable initial hidden state
         self.learn_z0 = learn_z0
         if learn_z0:
-            self.z0 = nn.Parameter(torch.zeros(1, 1, latent_dim))  # (num_layers, batch, latent_dim)
+            self.z0 = nn.Parameter(torch.zeros(1, 1, latent_dim))
 
-        # Fourier feature projection to latent space
         if self.mode == "vector":
-            # Vector mode: same Fourier features for all hours
-            # Project Fourier features to latent space
+
             self.Uf = nn.Parameter(torch.randn(latent_dim, self.F) * 0.01)
         else:
-            # Matrix mode: different Fourier features for each hour
-            # In this case, we need to match the output dimension H
-            # We'll project Fourier to H-dimensional space, then to latent
+
             self.Uf = nn.Parameter(torch.randn(self.H, self.F) * 0.01)
-            # If latent_dim != H, add projection layer
+
             if latent_dim != self.H:
                 self.fourier_proj = nn.Linear(self.H, latent_dim)
             else:
                 self.fourier_proj = None
 
-        # Feature attention mechanism (operates on latent space)
         self.feat_embed = nn.Parameter(torch.randn(latent_dim, d_model) * 0.02)
         self.attn = nn.MultiheadAttention(d_model, nhead, batch_first=True, dropout=dropout)
         self.ln1 = nn.LayerNorm(d_model)
@@ -200,33 +184,20 @@ class RNN_fourier(nn.Module):
         if use_gate:
             self.gate = nn.Sequential(nn.Linear(latent_dim, latent_dim), nn.Sigmoid())
 
-        # Final output projection from latent space to H hours
         self.A = nn.Parameter(torch.randn(self.H, latent_dim) * 0.01)
         self.c = nn.Parameter(torch.zeros(self.H))
 
     def _feature_attend(self, z):
-        """
-        Apply self-attention over the latent features.
-        z: (B, T, latent_dim)
 
-        We process each timestep independently, applying attention over the latent_dim features.
-        """
-        B, T, L = z.shape  # L = latent_dim
-
-        # Reshape to (B*T, latent_dim) to process all timesteps together
+        B, T, L = z.shape
         z_flat = z.reshape(B * T, L)
 
-        # Create feature embeddings: (B*T, latent_dim, d_model)
         tokens = z_flat.unsqueeze(-1) * self.feat_embed.unsqueeze(0)
-
-        # Apply attention over latent_dim dimension
-        # Input shape: (B*T, latent_dim, d_model)
         attn_out, _ = self.attn(tokens, tokens, tokens)
         tokens = self.ln1(tokens + attn_out)
         tokens = self.ln2(tokens + self.ffn(tokens))
-        delta = self.out_proj(tokens).squeeze(-1)  # (B*T, latent_dim)
+        delta = self.out_proj(tokens).squeeze(-1)
 
-        # Reshape back to (B, T, latent_dim)
         delta = delta.reshape(B, T, L)
 
         if self.use_gate:
@@ -235,10 +206,7 @@ class RNN_fourier(nn.Module):
             return z + delta
 
     def reg_loss(self, lambda0=0.0, lambdaf=0.0, harmonic_orders=None):
-        """
-        Regularization loss for Fourier coefficients.
-        Penalizes higher harmonics more heavily.
-        """
+
         loss = torch.tensor(0.0, device=self.Uf.device)
 
         if lambdaf > 0:
@@ -246,64 +214,42 @@ class RNN_fourier(nn.Module):
                 loss = loss + lambdaf * (self.Uf ** 2).sum()
             else:
                 w = torch.as_tensor(harmonic_orders, dtype=self.Uf.dtype, device=self.Uf.device)
-                # Harmonic orders: [1,1,2,2,3,3,...] for [sin1,cos1,sin2,cos2,...]
                 loss = loss + lambdaf * ((self.Uf ** 2) * (w ** 2).unsqueeze(0)).sum()
 
         return loss
 
     def forward(self, x_cont, z0=None):
-        """
-        Forward pass.
 
-        Args:
-            x_cont: (B, T, cont_dim) where cont_dim = 1 + F (vector) or 1 + 24*F (matrix)
-            z0: Optional initial hidden state (num_layers, B, latent_dim)
-
-        Returns:
-            O: (B, T, H) - output predictions for H hours (typically 24)
-            Z: (B, T, latent_dim) - final hidden states in latent space
-        """
         B, T, C = x_cont.shape
         assert C == self.cont_dim, f"expect cont_dim={self.cont_dim}, got {C}"
 
-        # Split input into base (x0) and Fourier (xf)
-        x0 = x_cont[:, :, :1]  # (B, T, 1) - daily totals
-        xf = x_cont[:, :, 1:]  # (B, T, F) or (B, T, 24*F)
+        x0 = x_cont[:, :, :1]
+        xf = x_cont[:, :, 1:]
 
-        # RNN processes only base dynamics in latent space
         if z0 is None and self.learn_z0:
-            h0 = self.z0.expand(-1, B, -1).contiguous()  # (1, B, latent_dim)
+            h0 = self.z0.expand(-1, B, -1).contiguous()
         else:
             h0 = z0
 
-        h, _ = self.rnn(x0, h0)  # h: (B, T, latent_dim)
+        h, _ = self.rnn(x0, h0)
 
-        # Add Fourier contribution to latent space
         if self.mode == "vector":
-            # Vector mode: xf is (B, T, F)
-            # Same Fourier pattern applied to latent space
-            fourier_contrib = xf @ self.Uf.T  # (B, T, F) @ (F, latent_dim) -> (B, T, latent_dim)
+
+            fourier_contrib = xf @ self.Uf.T
         else:
-            # Matrix mode: xf is (B, T, 24*F)
-            # Reshape to (B, T, 24, F) - different Fourier for each hour
-            xf_mat = xf.view(B, T, self.H, self.F)  # (B, T, 24, F)
-            # Each hour h gets: sum_f(xf[h,f] * Uf[h,f])
-            fourier_h = (xf_mat * self.Uf.unsqueeze(0).unsqueeze(0)).sum(-1)  # (B, T, 24)
+            xf_mat = xf.view(B, T, self.H, self.F)
+            fourier_h = (xf_mat * self.Uf.unsqueeze(0).unsqueeze(0)).sum(-1)
 
-            # Project to latent space if dimensions don't match
             if self.fourier_proj is not None:
-                fourier_contrib = self.fourier_proj(fourier_h)  # (B, T, 24) -> (B, T, latent_dim)
+                fourier_contrib = self.fourier_proj(fourier_h)
             else:
-                fourier_contrib = fourier_h  # (B, T, 24) when latent_dim == 24
+                fourier_contrib = fourier_h
 
-        # Combine RNN output with Fourier features in latent space
-        z = h + fourier_contrib  # (B, T, latent_dim)
+        z = h + fourier_contrib
 
-        # Apply feature attention in latent space
-        z = self._feature_attend(z)  # (B, T, latent_dim)
+        z = self._feature_attend(z)
 
-        # Final output projection from latent space to H hours
-        o = z @ self.A.T + self.c  # (B, T, latent_dim) @ (latent_dim, H) -> (B, T, H)
+        o = z @ self.A.T + self.c
 
         return o, z
 
@@ -342,19 +288,6 @@ class RNN_fourier(nn.Module):
 
     @torch.no_grad()
     def forecast_knownX(self, X_hist, X_future, T, sx=None, sy=None):
-        """
-        Generate forecast given historical and future features.
-
-        Args:
-            X_hist: Historical features (N_hist, cont_dim)
-            X_future: Future features (N_future, cont_dim)
-            T: Context length
-            sx: StandardScaler for X
-            sy: StandardScaler for Y
-
-        Returns:
-            Forecasted values (N_future, 24)
-        """
         self.eval()
         dev = next(self.parameters()).device
 
@@ -365,25 +298,16 @@ class RNN_fourier(nn.Module):
             hist = sx.transform(hist).astype(np.float32)
             fut = sx.transform(fut).astype(np.float32)
 
-        x_in = np.concatenate([hist, fut], axis=0)[None, ...]  # (1, T+N_future, cont_dim)
+        x_in = np.concatenate([hist, fut], axis=0)[None, ...]
         x_in = torch.from_numpy(x_in).to(dev)
 
         o_all, _ = self(x_in)
-        y_std = o_all[0, -len(X_future):, :].cpu().numpy()  # (N_future, 24)
+        y_std = o_all[0, -len(X_future):, :].cpu().numpy()
 
         return sy.inverse_transform(y_std) if sy is not None else y_std
 
     def get_dataloader(self, df, fourier_config):
-        """
-        Prepare data loader from raw dataframe.
 
-        Args:
-            df: DataFrame with columns ['ds', 'y']
-            fourier_config: Configuration for Fourier features
-
-        Returns:
-            Tuple of (loader, sx, sy, X_train, Y_train, X_test, Y_test, F_total)
-        """
         df['ds'] = pd.to_datetime(df['ds'])
 
         # Fix missing data and duplicate data and na

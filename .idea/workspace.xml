@@ -6,8 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="a6d6bee7-901a-458c-b374-c660dbb70386" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RNN_attention.py" beforeDir="false" afterPath="$PROJECT_DIR$/RNN_attention.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RNN_fourier_RNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/RNN_fourier_RNN.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RNN_simple.py" beforeDir="false" afterPath="$PROJECT_DIR$/RNN_simple.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/experiment.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/results.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment1.ipynb" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
