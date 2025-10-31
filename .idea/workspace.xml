@@ -5,7 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a6d6bee7-901a-458c-b374-c660dbb70386" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/result_table.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/rmse_latent_comed.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/rmse_latent_dayton.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/rmse_latent_deok.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/results.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/results.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
