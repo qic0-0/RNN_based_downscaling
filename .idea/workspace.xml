@@ -5,51 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a6d6bee7-901a-458c-b374-c660dbb70386" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/RNN_attention.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RNN_fourier_RNN.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/RNN_simple.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/prophet_linear_adjust.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/experiment_results/AEP_results/results_fourier.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/arma_helper.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/asym_helper.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/experiment.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_1.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_1.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_aep_asy_con.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_aep_fourier_kw3_km6_ky10_matrix.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_aep_fourier_w.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_aep_fourier_w_matrix.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_aep_self_con.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_aep_self_con_wc.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_aep_self_con_wn.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_arma_asy_con.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_prophet_w.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_prophet_wy.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_aep_asy_con.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_aep_fourier_kw3_km6_ky10_matrix.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_aep_fourier_w.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_aep_fourier_w_matrix.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_aep_self_con.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_aep_self_con_wc.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_aep_self_con_wn.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_arma_asy_con.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_prob_dich_90epoch.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_prophet_w.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_aep_fourier_kw3_km6_ky10_matrix.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_aep_fourier_w.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_aep_fourier_w_matrix.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_aep_self_con.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_aep_self_con_wc.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_aep_self_con_wn.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_arma_asy_con.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_prophet_w.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_aep_fourier_w.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_aep_fourier_w_matrix.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_aep_self_con.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_aep_self_con_wc.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_aep_self_con_wn.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_prophet_w.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model_dich_mu_std_laa.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model_summary.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/new_exp_results/results_RNN_fourier_RNN.csv" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,18 +34,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/zero/Documents/GitHub/RNN_based_downscaling&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/zero/Documents/GitHub/RNN_based_downscaling"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/experiment_results/AEP_results" />
     </key>
   </component>
   <component name="RunManager">
