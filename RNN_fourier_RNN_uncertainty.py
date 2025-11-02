@@ -8,8 +8,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error
-from typing import Optional, Literal, Tuple, List
+from typing import Optional, Literal, Tuple, List, Dict
 from dataclasses import dataclass
+
+from scipy.stats import norm
 
 
 def build_model_dp(model_cls, *args, **kwargs):
@@ -355,6 +357,67 @@ class RNN_fourier(nn.Module):
         return (loader, sx, sy, X_train, Y_train, X_test, Y_test, F_total)
 
 
+def generate_prediction_intervals(
+        y_pred: np.ndarray,
+        y_true: np.ndarray,
+        epsilon_mean: np.ndarray,
+        epsilon_cov: np.ndarray,
+        confidence: float = 0.95,
+        n_samples: int = 50000) -> Dict[str, np.ndarray]:
+
+    y_pred = np.asarray(y_pred)
+
+    epsilon_samples = np.random.multivariate_normal(
+        np.zeros_like(epsilon_mean),
+        epsilon_cov,
+        size=n_samples
+    )
+
+    if y_pred.ndim == 1:
+        y_samples = y_pred[np.newaxis, :] + epsilon_samples
+    else:
+        n_days = y_pred.shape[0]
+        y_samples = np.zeros((n_samples, n_days, 24))
+        for d in range(n_days):
+            y_samples[:, d, :] = y_pred[d] + epsilon_samples
+
+    alpha = 1 - confidence
+    lower = np.quantile(y_samples, alpha / 2, axis=0)
+    upper = np.quantile(y_samples, 1 - alpha / 2, axis=0)
+    point = y_pred + epsilon_mean
+
+    result = {
+        'point': point,
+        'lower': lower,
+        'upper': upper,
+        'width': upper - lower,
+        'samples': y_samples
+    }
+
+    if y_true is not None:
+        y_true = np.asarray(y_true)
+
+        if y_pred.ndim == 1:
+            p_values = np.zeros(24)
+
+            for h in range(24):
+                p_values[h] = np.mean(y_samples[:, h] <= y_true[h])
+
+            result['p_values'] = p_values
+
+        else:
+            n_days = y_pred.shape[0]
+            p_values = np.zeros((n_days, 24))
+
+            for d in range(n_days):
+                for h in range(24):
+                    p_values[d, h] = np.mean(y_samples[:, d, h] <= y_true[d, h])
+
+            result['p_values'] = p_values
+
+    return result
+
+
 @dataclass
 class training_config:
     n_epochs: int = 25
@@ -444,6 +507,15 @@ class RNN_train_fourier:
 
         epsilon_std = np.sqrt(np.diag(epsilon_cov))
 
+        intervals = generate_prediction_intervals(
+            y_pred=y_test_pred.flatten(),
+            y_true=Y_test.flatten(),
+            epsilon_mean=epsilon_mean,
+            epsilon_cov=epsilon_cov,
+            confidence=0.95,
+            n_samples=50000
+        )
+
         return {
             'train_residuals': train_residuals_matrix,
             'epsilon_mean': epsilon_mean,
@@ -452,5 +524,8 @@ class RNN_train_fourier:
             'test_pred': y_test_pred.flatten(),
             'test_true': Y_test.flatten(),
             'n_train_days_predicted': len(train_residuals_matrix),
-            'T_hist': T
+            'T_hist': T,
+            'y_pred_lower':intervals['lower'],
+            'y_pred_upper':intervals['upper'],
+            'p_values': intervals['p_values'].flatten(),
         }
