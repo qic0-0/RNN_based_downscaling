@@ -6,20 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="a6d6bee7-901a-458c-b374-c660dbb70386" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/experiment.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_prophet_rnn_hybrid.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Comed_results/results_prophet_rnn_hybrid.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_fourier.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/results_fourier.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_fourier_dim16.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/results_fourier_dim16.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_fourier_dim64.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/results_fourier_dim64.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_prophet.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/results_prophet.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_prophet_dwy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/results_prophet_dwy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/rmse_latent_deok.png" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/rmse_latent_deok.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/rmse_prophet_deok.png" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/rmse_prophet_deok.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/rmse_rnn_deok.png" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/rmse_rnn_deok.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_yearly.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_yearly.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/results.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results_uncertainty.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/results_uncertainty.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results_yearly.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/results_yearly.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
