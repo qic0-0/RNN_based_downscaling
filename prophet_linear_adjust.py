@@ -118,13 +118,13 @@ def covariance_MAP_nonlinear(model, forecast_df):
     return cov_matrix
 
 def forecast_next_day_hourly(df, date_start, date_end, daily_demand, manual = False, bayesian_samples = 0, linear_trend = True,
-                             daily=False, weekly=False, yearly=False):
+                             daily=False, weekly=False, yearly=False, monthly=False):
 
     start = pd.to_datetime(date_start)
     end = pd.to_datetime(date_end)
 
     df_train = df.loc[(df['ds'] >= start) & (df['ds'] < end)].copy()
-    df_test = df.loc[(df['ds'] >= end) & (df['ds'] < end + pd.Timedelta(days=1))].copy()
+    df_test = df.loc[(df['ds'] >= end) & (df['ds'] < end + pd.DateOffset(days=1))].copy()
 
     if linear_trend:
         growth = 'linear'
@@ -133,7 +133,8 @@ def forecast_next_day_hourly(df, date_start, date_end, daily_demand, manual = Fa
 
     model = Prophet(daily_seasonality=daily, weekly_seasonality=weekly, yearly_seasonality=yearly,
                     mcmc_samples = bayesian_samples, growth = growth)
-    model.add_seasonality(name='hourly', period=24, fourier_order=8)
+    if monthly:
+        model.add_seasonality(name='monthly', period=365.25 / 12, fourier_order=5)
     model.fit(df_train)
 
     forecast = model.predict(df_test[['ds']]).sort_values('ds').reset_index()
