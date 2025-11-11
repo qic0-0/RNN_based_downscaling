@@ -5,63 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a6d6bee7-901a-458c-b374-c660dbb70386" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/experiment_yearly.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/prophet_yearly_to_daily.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/results_yearly.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RNN_fourier_RNN.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RNN_fourier_RNN_uncertainty.py" beforeDir="false" afterPath="$PROJECT_DIR$/RNN_fourier_RNN_uncertainty.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/experiment.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/experiment.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_fourier.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/AEP_results/results_fourier.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_fourier_dim16.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/AEP_results/results_fourier_dim16.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_fourier_dim64.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/AEP_results/results_fourier_dim64.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_prophet.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/AEP_results/results_prophet.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/results_prophet_dwy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/AEP_results/results_prophet_dwy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/rmse_latent_aep.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/rmse_prophet_aep.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/AEP_results/rmse_rnn_aep.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_fourier.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Comed_results/results_fourier.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_fourier_dim16.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Comed_results/results_fourier_dim16.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_fourier_dim64.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Comed_results/results_fourier_dim64.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_prophet.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Comed_results/results_prophet.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_prophet_dwy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Comed_results/results_prophet_dwy.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/rmse_latent_comed.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/rmse_prophet_comed.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/rmse_rnn_comed.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_fourier.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_fourier_dim16.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_fourier_dim64.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_prophet.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/results_prophet_dwy.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/rmse_latent_dayton.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/rmse_prophet_dayton.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_results/Dayton_results/rmse_rnn_dayton.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiment_uncertainty.ipynb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/AEP_results/epsilon_params_results.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/AEP_results/p_values_plot_aep.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/AEP_results/results_fourier.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/AEP_results/train_residuals_results.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/Comed_results/epsilon_params_results.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/Comed_results/p_values_plot_comed.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/Comed_results/results_fourier.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/Comed_results/train_residuals_results.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/Dayton_results/epsilon_params_results.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/Dayton_results/p_values_plot_dayton.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/Dayton_results/results_fourier.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/Dayton_results/train_residuals_results.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/Deok_results/epsilon_params_results.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/Deok_results/p_values_plot_deok.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/Deok_results/results_fourier.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results/Deok_results/train_residuals_results.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results2/AEP_results/epsilon_params_results.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results2/AEP_results/p_values_plot_aep.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results2/AEP_results/results_fourier.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results2/AEP_results/train_residuals_results.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results2/Comed_results/epsilon_params_results.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results2/Comed_results/results_fourier.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_exp_results2/Comed_results/train_residuals_results.pkl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/prophet_linear_adjust.py" beforeDir="false" afterPath="$PROJECT_DIR$/prophet_linear_adjust.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_results/Comed_results/results_prophet_rnn_hybrid.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Comed_results/results_prophet_rnn_hybrid.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_fourier.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/results_fourier.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_fourier_dim16.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/results_fourier_dim16.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_fourier_dim64.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/results_fourier_dim64.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_prophet.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/results_prophet.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/results_prophet_dwy.csv" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/results_prophet_dwy.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/rmse_latent_deok.png" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/rmse_latent_deok.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/rmse_prophet_deok.png" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/rmse_prophet_deok.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_results/Deok_results/rmse_rnn_deok.png" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_results/Deok_results/rmse_rnn_deok.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/experiment_yearly.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/experiment_yearly.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/results.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/results.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results_uncertainty.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/results_uncertainty.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results_yearly.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/results_yearly.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
