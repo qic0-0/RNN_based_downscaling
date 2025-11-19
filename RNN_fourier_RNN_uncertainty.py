@@ -126,14 +126,15 @@ class RNN_fourier(nn.Module):
             H=24,
             use_gate=True,
             nonneg_U0=False,
-            rnn_type="rnn"
+            rnn_type="rnn",
+            unique_alpah=False,
     ):
         super().__init__()
         assert xf_mode in ("vector", "matrix")
         if xf_mode == "vector":
             assert cont_dim == 1 + fourier_dim, "vector mode cont_dim should be 1+F"
         else:
-            assert cont_dim == 1 + 24 * fourier_dim, "matrix mode cont_dim should be 1+24*F"
+            assert cont_dim == 1 + H * fourier_dim, "matrix mode cont_dim should be 1+24*F"
 
         self.H = H
         self.latent_dim = latent_dim
@@ -141,6 +142,7 @@ class RNN_fourier(nn.Module):
         self.mode = xf_mode
         self.nonneg_U0 = nonneg_U0
         self.cont_dim = cont_dim
+        self.unique_alpah = unique_alpah
 
         if rnn_type == "rnn":
             self.rnn = nn.RNN(
@@ -161,18 +163,16 @@ class RNN_fourier(nn.Module):
         self.learn_z0 = learn_z0
         if learn_z0:
             self.z0 = nn.Parameter(torch.zeros(1, 1, latent_dim))
-
         if self.mode == "vector":
-
-            self.Uf = nn.Parameter(torch.randn(latent_dim, self.F) * 0.01)
+            self.V = nn.Linear(1, latent_dim, bias=True)
+            self.a = nn.Parameter(torch.randn(self.F) * 0.01)
         else:
-
-            self.Uf = nn.Parameter(torch.randn(self.H, self.F) * 0.01)
-
-            if latent_dim != self.H:
-                self.fourier_proj = nn.Linear(self.H, latent_dim)
+            if self.unique_alpah:
+                self.V = nn.Linear(self.H, latent_dim, bias=True)
+                self.a = nn.Parameter(torch.randn(self.F) * 0.01)
             else:
-                self.fourier_proj = None
+                self.V = nn.Linear(self.H, latent_dim, bias=True)
+                self.a = nn.Parameter(torch.randn(self.H, self.F) * 0.01)
 
         self.feat_embed = nn.Parameter(torch.randn(latent_dim, d_model) * 0.02)
         self.attn = nn.MultiheadAttention(d_model, nhead, batch_first=True, dropout=dropout)
@@ -196,7 +196,6 @@ class RNN_fourier(nn.Module):
 
         B, T, L = z.shape
         z_flat = z.reshape(B * T, L)
-
         tokens = z_flat.unsqueeze(-1) * self.feat_embed.unsqueeze(0)
         attn_out, _ = self.attn(tokens, tokens, tokens)
         tokens = self.ln1(tokens + attn_out)
@@ -211,15 +210,20 @@ class RNN_fourier(nn.Module):
             return z + delta
 
     def reg_loss(self, lambda0=0.0, lambdaf=0.0, harmonic_orders=None):
+        device = self.a.device
+        dtype = self.a.dtype
 
-        loss = torch.tensor(0.0, device=self.Uf.device)
+        loss = torch.tensor(0.0, device=device)
 
         if lambdaf > 0:
             if harmonic_orders is None:
-                loss = loss + lambdaf * (self.Uf ** 2).sum()
+                loss = loss + lambdaf * (self.a ** 2).sum()
             else:
-                w = torch.as_tensor(harmonic_orders, dtype=self.Uf.dtype, device=self.Uf.device)
-                loss = loss + lambdaf * ((self.Uf ** 2) * (w ** 2).unsqueeze(0)).sum()
+                w = torch.as_tensor(harmonic_orders, dtype=dtype, device=device)
+                if self.unique_alpah:
+                    loss = loss + lambdaf * ((self.a ** 2) * (w ** 2)).sum()
+                else:
+                    loss = loss + lambdaf * ((self.a ** 2) * (w ** 2).unsqueeze(0)).sum()
 
         return loss
 
@@ -239,16 +243,21 @@ class RNN_fourier(nn.Module):
         h, _ = self.rnn(x0, h0)
 
         if self.mode == "vector":
-
-            fourier_contrib = xf @ self.Uf.T
+            fourier_weighted = xf * self.a.unsqueeze(0).unsqueeze(0)
+            s = fourier_weighted.sum(-1)
+            s = s.unsqueeze(-1)
+            fourier_contrib = self.V(s).squeeze(-1) if self.latent_dim != 1 else s.squeeze(-1)
         else:
-            xf_mat = xf.view(B, T, self.H, self.F)
-            fourier_h = (xf_mat * self.Uf.unsqueeze(0).unsqueeze(0)).sum(-1)
-
-            if self.fourier_proj is not None:
-                fourier_contrib = self.fourier_proj(fourier_h)
+            if self.unique_alpah:
+                xf_mat = xf.view(B, T, self.H, self.F)
+                fourier_weighted = xf_mat * self.a.unsqueeze(0).unsqueeze(0).unsqueeze(0)
+                s = fourier_weighted.sum(-1)
+                fourier_contrib = self.V(s)
             else:
-                fourier_contrib = fourier_h
+                xf_mat = xf.view(B, T, self.H, self.F)
+                fourier_weighted = xf_mat * self.a.unsqueeze(0).unsqueeze(0)
+                s = fourier_weighted.sum(-1)
+                fourier_contrib = self.V(s)
 
         z = h + fourier_contrib
 
@@ -518,31 +527,6 @@ class RNN_train_fourier:
         self.epsilon_std = np.sqrt(np.diag(self.epsilon_cov))
 
     def forcaste(self, df_test, deterministic = False):
-        X_test, Y_test = self.model.get_dataloader(df_test, self.fourier_conf, test=True, start_day = self.start_day)
-        T = self.training_config.T_hist
-        with torch.no_grad():
-            y_test_pred = self.model.forecast_knownX(X_hist=self.X_train, X_future=X_test, T=T, sx=self.sx, sy=self.sy)
-
-        if deterministic:
-            return y_test_pred.flatten(), Y_test.flatten()
-
-        intervals = generate_prediction_intervals(
-            y_pred=y_test_pred.flatten(),
-            y_true=Y_test.flatten(),
-            epsilon_mean=self.epsilon_mean,
-            epsilon_cov=self.epsilon_cov,
-            confidence=0.95,
-            n_samples=50000
-        )
-
-        return {
-            'test_pred': y_test_pred.flatten(),
-            'test_true': Y_test.flatten(),
-            'y_pred_lower':intervals['lower'],
-            'y_pred_upper':intervals['upper'],
-            'p_values': intervals['p_values'].flatten(),
-        }
-    def forecate(self, df_test, deterministic = False):
         X_test, Y_test = self.model.get_dataloader(df_test, self.fourier_conf, test=True, start_day = self.start_day)
         T = self.training_config.T_hist
         with torch.no_grad():

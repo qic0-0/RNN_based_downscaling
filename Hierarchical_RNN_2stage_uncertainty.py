@@ -142,29 +142,17 @@ def append_fourier_features_matrix(df_wide, K, period_days, H, mode="matrix", st
 # ============================================================================
 
 class YearLengthHead(nn.Module):
-    """
-    Selection head that maps fixed 366-day output to variable year lengths.
-    Uses separate linear layers for 365 and 366 day years.
-    """
 
     def __init__(self, latent_dim=24):
         super().__init__()
         self.latent_dim = latent_dim
 
-        self.head_365 = nn.Linear(latent_dim * 366, 365)  # Regular year
-        self.head_366 = nn.Linear(latent_dim * 366, 366)  # Leap year
+        self.head_365 = nn.Linear(latent_dim * 366, 365)
+        self.head_366 = nn.Linear(latent_dim * 366, 366)
 
     def forward(self, z_366, year):
-        """
-        Args:
-            z_366: (B, 366, latent_dim) - fixed output from RNN
-            year: int or array - year
-
-        Returns:
-            Variable length daily output based on year
-        """
         B = z_366.shape[0]
-        z_flat = z_366.reshape(B, -1)  # (B, 366 * latent_dim)
+        z_flat = z_366.reshape(B, -1)
 
         if is_leap_year(year):
             return self.head_366(z_flat)
